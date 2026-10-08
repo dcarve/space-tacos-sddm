@@ -342,30 +342,75 @@ Rectangle {
         spacing: 20 * s;
         opacity: root.ui
         Repeater {
-            model: [{l: (sessionHelper.currentItem && sessionHelper.currentItem.sName ? sessionHelper.currentItem.sName : "Session").toUpperCase(), a: 2}, {l: "REINICIAR", a: 0}, {l: "DESLIGAR", a: 1}]
+            model: [
+                {l: (sessionHelper.currentItem && sessionHelper.currentItem.sName ? sessionHelper.currentItem.sName : "Session").toUpperCase(), a: 2},
+                {l: "REINICIAR", a: 0},
+                {l: "DESLIGAR", a: 1}
+            ]
             delegate: Item {
                 visible: modelData.a === 2 ? !root.isQuickshell : true
                 width: pmt.implicitWidth + 24 * s; height: 28 * s
-                Rectangle { anchors.fill: parent; color: "transparent"; border.color: root.steel; border.width: 1 * s; opacity: pm.containsMouse ? 1.0 : 0.3; Behavior on opacity { NumberAnimation { duration: 150 } } Rectangle { anchors.fill: parent; anchors.margins: 1 * s; color: modelData.a === 2 ? root.latte : root.steel; radius: 2 * s; opacity: pm.containsMouse ? 0.3 : 0; Behavior on opacity { NumberAnimation { duration: 150 } } } }
+                Rectangle {
+                    anchors.fill: parent;
+                    color: "transparent";
+                    border.color: root.steel;
+                    border.width: 1 * s;
+                    opacity: pm.containsMouse ? 1.0 : 0.3;
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 150
+                        }
+                    } Rectangle {
+                        anchors.fill: parent;
+                        anchors.margins: 1 * s;
+                        color: modelData.a === 2 ? root.latte : root.steel;
+                        radius: 2 * s;
+                        opacity: pm.containsMouse ? 0.3 : 0;
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 150
+                            }
+                        }
+                    }
+                }
                 Text {
                     id:pmt;
                     anchors.centerIn: parent;
-                    text: modelData.l; color: "white"; font.family: pf.name; font.pixelSize: 10 * s; font.letterSpacing: 2 * s }
+                    text: modelData.l;
+                    color: "white";
+                    font.family: pf.name;
+                    font.pixelSize: 10 * s;
+                    font.letterSpacing: 2 * s
+                }
                 MouseArea {
                     id: pm;
                     anchors.fill: parent;
                     hoverEnabled: true;
                     cursorShape: Qt.PointingHandCursor;
-                    onClicked: { if (modelData.a === 0) { if (typeof sddm !== "undefined") sddm.reboot() } else if (modelData.a === 1) { if (typeof sddm !== "undefined") sddm.powerOff() } else if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0) root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount() } }
+                    onClicked: {
+                        if (modelData.a === 0) {
+                            if (typeof sddm !== "undefined") sddm.reboot()
+                        } else if (modelData.a === 1) {
+                            if (typeof sddm !== "undefined") sddm.powerOff()
+                        } else if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0) root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount()
+                    }
+                }
             }
         }
     }
 
     Connections {
         target: typeof sddm !== "undefined" ? sddm : null
-        function onLoginFailed() { err.text = "ACESSO NEGADO"; pwd.text = ""; pwd.focus = true }
+        function onLoginFailed() {
+            err.text = "ACESSO NEGADO";
+            pwd.text = "";
+            pwd.focus = true
+        }
     }
     
-    function doLogin() { var u = (userHelper.currentItem && userHelper.currentItem.uLogin) ? userHelper.currentItem.uLogin : (typeof userModel !== "undefined" ? userModel.lastUser : ""); if (typeof sddm !== "undefined") sddm.login(u, pwd.text, root.sessionIndex) }
+    function doLogin() {
+        var u = (userHelper.currentItem && userHelper.currentItem.uLogin) ? userHelper.currentItem.uLogin : (typeof userModel !== "undefined" ? userModel.lastUser : "");
+        if (typeof sddm !== "undefined") sddm.login(u, pwd.text, root.sessionIndex)
+    }
 }
 
