@@ -1,7 +1,7 @@
 [SddmGreeterTheme]
-Name=custom_theme
-Description=custom_theme Qylock Theme
-Author=Daniel
+Name=Space Tacos
+Description=Space Tacos SDDM Qylock Theme
+Author=d_carve
 Type=sddm-theme
 MainScript=Main.qml
 ConfigFile=theme.conf
