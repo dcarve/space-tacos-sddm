@@ -22,6 +22,32 @@ Rectangle {
     readonly property color steel: "#5c7996"
     readonly property color textDim: "#a09088"
 
+
+    property var weekdays: [
+        "domingo",
+        "segunda-feira",
+        "terça-feira",
+        "quarta-feira",
+        "quinta-feira",
+        "sexta-feira",
+        "sábado"
+    ]
+
+    property var months: [
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro"
+    ]
+
     FolderListModel {
         id: fontFolder;
         folder: Qt.resolvedUrl("font");
@@ -84,6 +110,44 @@ Rectangle {
         source: "BackgroundVideo.qml"
     }
 
+
+    Image {
+        id: floatingImage;
+        // anchors.right: parent.right;
+        // anchors.top: parent.top;
+        // anchors.topMargin: 65 * s;
+        // anchors.rightMargin: 120 * s ;
+
+        source: "car.png"
+
+
+        // Your image size
+        width: 500
+        height: 150
+
+
+        x: (parent.width - width) / 2
+        y: 100
+
+        fillMode: Image.PreserveAspectFit
+
+        SequentialAnimation on y {
+            loops: Animation.Infinite
+
+            NumberAnimation {
+                to: 110
+                duration: 1500
+                easing.type: Easing.InOutSine
+            }
+
+            NumberAnimation {
+                to: 100
+                duration: 1500
+                easing.type: Easing.InOutSine
+            }
+        }
+    }
+
     // Top Overlay
     Rectangle {
         anchors.top: parent.top;
@@ -122,7 +186,7 @@ Rectangle {
     Column {
         anchors.left: parent.left;
         anchors.bottom: parent.bottom;
-        anchors.bottomMargin: 60 * s;
+        anchors.bottomMargin: 65 * s;
         anchors.leftMargin: 120 * s ;
         spacing: 4 * s;
         opacity: root.ui
@@ -135,10 +199,10 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
             }
             Text {
-                text: Qt.formatDate(new Date(), "dddd, MMMM d").toUpperCase();
+                text:(weekdays[new Date().getDay()] + ", " + new Date().getDate() + " de " + months[new Date().getMonth()]).toUpperCase();
                 color: root.steel;
                 font.family: pf.name;
-                font.pixelSize: 12 * s;
+                font.pixelSize: 14 * s;
                 font.letterSpacing: 4 * s;
                 anchors.verticalCenter: parent.verticalCenter
             }
