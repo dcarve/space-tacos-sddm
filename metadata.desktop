@@ -1,0 +1,8 @@
+[SddmGreeterTheme]
+Name=custom_theme
+Description=custom_theme Qylock Theme
+Author=Daniel
+Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6
