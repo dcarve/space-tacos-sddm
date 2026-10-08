@@ -126,8 +126,8 @@ Rectangle {
         height: 150
 
 
-        x: (parent.width - width) / 2
-        y: 100
+        x: (parent.width - width) / 2 + 450
+        y: 465
 
         fillMode: Image.PreserveAspectFit
 
@@ -135,13 +135,13 @@ Rectangle {
             loops: Animation.Infinite
 
             NumberAnimation {
-                to: 110
+                to: 475
                 duration: 1500
                 easing.type: Easing.InOutSine
             }
 
             NumberAnimation {
-                to: 100
+                to: 465
                 duration: 1500
                 easing.type: Easing.InOutSine
             }
