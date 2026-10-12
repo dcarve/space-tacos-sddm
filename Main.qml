@@ -3,6 +3,9 @@ import QtQuick.Window
 import Qt5Compat.GraphicalEffects
 import Qt.labs.folderlistmodel
 import SddmComponents 2.0
+import QtQuick.Shapes
+
+import "locale.js" as Language
 
 Rectangle {
     readonly property real s: Screen.height / 768
@@ -10,54 +13,29 @@ Rectangle {
     id: root
     width: Screen.width
     height: Screen.height
-    color: "#16101a"
+    gradient: Gradient { 
+        GradientStop { position: 0.0; color: "#3339a1"}
+        GradientStop { position: 1.0; color: "#472460"}
+    }
 
     property bool isQuickshell: typeof sddm === "undefined" || sddm.hostName === undefined
     property int sessionIndex: (typeof sessionModel !== "undefined" && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
     property int userIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
-    property bool isPrimary: screenModel.primary === index
     property real ui: 0
+    readonly property bool isPrimary:
+        Window.window &&
+        Window.window.screen === Qt.application.screens[0]
 
     readonly property color latte: "#d2976b"
     readonly property color steel: "#5c7996"
     readonly property color textDim: "#a09088"
 
 
-    property var weekdays: [
-        "domingo",
-        "segunda-feira",
-        "terça-feira",
-        "quarta-feira",
-        "quinta-feira",
-        "sexta-feira",
-        "sábado"
-    ]
+    property var weekdays: Language.getWeekdays()
+    property var months: Language.getMonths()
 
-    property var months: [
-        "janeiro",
-        "fevereiro",
-        "março",
-        "abril",
-        "maio",
-        "junho",
-        "julho",
-        "agosto",
-        "setembro",
-        "outubro",
-        "novembro",
-        "dezembro"
-    ]
-
-    FolderListModel {
-        id: fontFolder;
-        folder: Qt.resolvedUrl("font");
-        nameFilters: ["*.ttf", "*.otf"] 
-    }
-
-    FontLoader {
-        id: pf;
-        source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : ""
-    }
+    FolderListModel { id: fontFolder; folder: Qt.resolvedUrl("font"); nameFilters: ["*.ttf", "*.otf"] }
+    FontLoader { id: pf; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
     ListView {
         id: sessionHelper;
@@ -105,80 +83,83 @@ Rectangle {
         easing.type: Easing.OutCubic
     }
 
-    Loader {
-        anchors.fill: parent;
-        source: "BackgroundVideo.qml"
-    }
 
+    Item {
+        id: spaceTacos
+        x: (parent.width - width) - 800
+        y: 140
 
-    Image {
-        id: floatingImage;
-        // anchors.right: parent.right;
-        // anchors.top: parent.top;
-        // anchors.topMargin: 65 * s;
-        // anchors.rightMargin: 120 * s ;
+        Image {
+            id: building_1; source: "assets/building1.png";
+            width: 575; height: 818
+            fillMode: Image.PreserveAspectFit
+        }
 
-        source: "car.png"
+        Image {
+            id: car; source: "assets/car.png"
+            width: 500; height: 150
+            x: 200; y: 365
+            fillMode: Image.PreserveAspectFit
 
+            SequentialAnimation on y {
+                loops: Animation.Infinite
 
-        // Your image size
-        width: 500
-        height: 150
-
-
-        x: (parent.width - width) / 2 + 450
-        y: 465
-
-        fillMode: Image.PreserveAspectFit
-
-        SequentialAnimation on y {
-            loops: Animation.Infinite
-
-            NumberAnimation {
-                to: 475
-                duration: 1500
-                easing.type: Easing.InOutSine
-            }
-
-            NumberAnimation {
-                to: 465
-                duration: 1500
-                easing.type: Easing.InOutSine
+                NumberAnimation { to: 375; duration: 1500; easing.type: Easing.InOutSine}
+                NumberAnimation { to: 365; duration: 1500; easing.type: Easing.InOutSine}
             }
         }
+
+
+        Shape {
+            width: 200
+            height: 200
+
+            ShapePath {
+                strokeColor: "transparent"
+                strokeWidth: 0
+
+
+                fillGradient: LinearGradient {
+                    x1: 0
+                    y1: 0
+                    x2: 200
+                    y2: 200
+
+                    GradientStop { position: 0.0; color: "red" }
+                    GradientStop { position: 0.5; color: "yellow" }
+                    GradientStop { position: 1.0; color: "blue" }
+                }
+
+                startX: 20
+                startY: 20
+
+                PathLine { x: 180; y: 20 }
+                PathLine { x: 100; y: 180 }
+                PathLine { x: 20; y: 20 } // Fecha o triângulo
+            }
+        }
+
     }
+
+
 
     // Top Overlay
     Rectangle {
-        anchors.top: parent.top;
-        anchors.left: parent.left;
-        anchors.right: parent.right;
-        height: 160 * s;
+        anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right;
+        height: 160 * s; 
         gradient: Gradient {
-            GradientStop {
-                position: 0.0;
-                color: "#d8000000"
-            } GradientStop {
-                position: 1.0;
-                color: "transparent"
-            }
+            GradientStop { position: 0.0; color: "#d8000000"}
+            GradientStop { position: 1.0; color: "transparent" }
         }
     }
 
     // Bottom Overlay
     Rectangle {
-        anchors.bottom: parent.bottom;
-        anchors.left: parent.left;
-        anchors.right: parent.right;
+        anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.right: parent.right;
         height: 320 * s;
         gradient: Gradient {
-            GradientStop {
-                position: 0.0;
-                color: "transparent"
-            } GradientStop {
-                position: 1.0;
-                color: "#e8000000"
-            }
+            GradientStop { position: 0.0; color: "transparent"}
+            GradientStop { position: 1.0; color: "#e8000000"}
         }
     }
 
