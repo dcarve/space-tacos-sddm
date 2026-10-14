@@ -22,9 +22,6 @@ Rectangle {
     property int sessionIndex: (typeof sessionModel !== "undefined" && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
     property int userIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
     property real ui: 0
-    readonly property bool isPrimary:
-        Window.window &&
-        Window.window.screen === Qt.application.screens[0]
 
     readonly property color latte: "#d2976b"
     readonly property color steel: "#5c7996"
@@ -35,7 +32,8 @@ Rectangle {
     property var months: Language.getMonths()
 
     FolderListModel { id: fontFolder; folder: Qt.resolvedUrl("font"); nameFilters: ["*.ttf", "*.otf"] }
-    FontLoader { id: pf; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
+    FontLoader { id: pf; source: fontFolder.count > 0 ? "font/" + fontFolder.get(1, "fileName") : "" }
+    FontLoader { id: pfd; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
     ListView {
         id: sessionHelper;
@@ -80,62 +78,110 @@ Rectangle {
         from: 0;
         to: 1;
         duration: 800;
-        easing.type: Easing.OutCubic
+        easing.type: Easing.OutCubic    
     }
 
 
     Item {
         id: spaceTacos
-        x: (parent.width - width) - 800
-        y: 140
+        x: (parent.width - width) - 900
+        y: (parent.height - height) - 950
 
         Image {
-            id: building_1; source: "assets/building1.png";
+            id: building_1; source: "assets/building_1.png";
             width: 575; height: 818
             fillMode: Image.PreserveAspectFit
         }
 
         Image {
+            id: light; source: "assets/light.png";
+            width: 284/2; height: 516/2
+            fillMode: Image.PreserveAspectFit
+        }
+
+        Item {
+            id: neonSign
+
+            width: 154
+            height: 162
+            x: 324
+            y: 34
+
+            // Set your image paths here
+            property string neonOn: "assets/neon_on.png"
+            property string neonOff: "assets/neon_off.png"
+
+            property bool isOn: false
+
+            Image {
+                id: neonImage
+                anchors.fill: parent
+                source: neonSign.isOn ? neonSign.neonOn : neonSign.neonOff
+                fillMode: Image.PreserveAspectFit
+                asynchronous: true
+                cache: true
+            }
+
+            // Random flickering timer
+            Timer {
+                id: flickerTimer
+                running: true
+                repeat: true
+                interval: Math.random() * 150 + 50
+
+                onTriggered: {
+                    neonSign.isOn = Math.random() > 0.35
+
+                    // Occasionally pause, creating a realistic effect
+                    if (Math.random() > 0.75) {
+                        flickerTimer.interval = Math.random() * 500 + 200
+                    } else {
+                        flickerTimer.interval = Math.random() * 120 + 30
+                    }
+                }
+            }
+        }
+                    
+        Text {
+            id: isometricClock
+            text: Qt.formatTime(new Date(), "HH:mm")
+            font.family: pfd.name
+            font.pixelSize: 58
+            font.bold: true
+            x: 192
+            y: 480
+
+            color: "#9f063c"
+            style: Text.Outline
+            styleColor: "#000000"
+
+            Timer {
+                interval: 1000;
+                running: true;
+                repeat: true;
+                onTriggered: isometricClock.text = Qt.formatTime(new Date(), "HH:mm")
+            }
+
+            transform: Rotation {
+                origin.x: 30
+                origin.y: 0
+                axis { x: 0; y: 1; z: 0 }
+                angle: -54
+            }
+        }
+
+
+        Image {
             id: car; source: "assets/car.png"
             width: 500; height: 150
-            x: 200; y: 365
+            x: 240; y: 300
             fillMode: Image.PreserveAspectFit
 
             SequentialAnimation on y {
                 loops: Animation.Infinite
 
-                NumberAnimation { to: 375; duration: 1500; easing.type: Easing.InOutSine}
-                NumberAnimation { to: 365; duration: 1500; easing.type: Easing.InOutSine}
-            }
-        }
-
-
-        Shape {
-            width: 200
-            height: 200
-
-            ShapePath {
-                strokeColor: "transparent"
-                strokeWidth: 0
-
-
-                fillGradient: LinearGradient {
-                    x1: 0
-                    y1: 0
-                    x2: 200
-                    y2: 200
-
-                    GradientStop { position: 0.0; color: "red" }
-                    GradientStop { position: 0.5; color: "yellow" }
-                    GradientStop { position: 1.0; color: "blue" }
-                }
-
-                startX: 20
-                startY: 20
-
-                PathLine { x: 180; y: 20 }
-                PathLine { x: 100; y: 180 }
-                PathLine { x: 20; y: 20 } // Fecha o triângulo
+                NumberAnimation { to: 310; duration: 1500; easing.type: Easing.InOutSine}
+                NumberAnimation { to: 300; duration: 1500; easing.type: Easing.InOutSine}
             }
         }
 
@@ -173,12 +219,7 @@ Rectangle {
         opacity: root.ui
         Row {
             spacing: 8 * s
-            Rectangle {
-                width: 4 * s;
-                height: 4 * s;
-                color: root.latte;
-                anchors.verticalCenter: parent.verticalCenter
-            }
+            Rectangle { width: 4 * s; height: 4 * s; color: root.latte; anchors.verticalCenter: parent.verticalCenter}
             Text {
                 text:(weekdays[new Date().getDay()] + ", " + new Date().getDate() + " de " + months[new Date().getMonth()]).toUpperCase();
                 color: root.steel;
